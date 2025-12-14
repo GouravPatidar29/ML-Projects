@@ -28,5 +28,6 @@ setup(
     versions='0.0.1',
     author='Gourav',
     author_email='gouravpatidar290@gmail.com',
-    insatall_requires=get_requirements('requirements.txt')
+    insatall_requires=get_requirements('requirements.txt'),
+    packages=find_packages()
 )
