@@ -2,7 +2,7 @@ import os
 import sys
 import numpy as np
 import pandas as pd
-import dil
+import dill
 
 from src.exception import CustomException
 from src.logger import logging

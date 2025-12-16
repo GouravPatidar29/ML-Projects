@@ -1,7 +1,7 @@
 import sys
-from dataclass import dataclass
+from dataclasses import dataclass
 
-import numpy as numpy
+import numpy as np
 import pandas as pd 
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
@@ -10,6 +10,7 @@ from sklearn.preprocessing import OneHotEncoder,StandardScaler
 
 from src.exception import CustomException
 from src.logger import logging
+from src.utils import save_object
 
 import os
 
@@ -24,39 +25,39 @@ class DataTransformation:
     def get_data_transformation_object(self):
         try:
             logging.info("Starts scaling and encoding") 
-           numerical_columns=["writing_score","reading_score"]
-           categorical_columns=[
+            numerical_columns=["writing_score","reading_score"]
+            categorical_columns=[
                 "gender",
                 "race_ethnicity",
                 "parental_level_of_education",
                 "lunch",
                 "test_preparation_course"]
 
-                num_pipeline=Pipeline(
+            num_pipeline=Pipeline(
                     steps=[
                         ("imputer",SimpleImputer(strategy="median")),
                         ("scaler",StandardScaler())
 
                     ]                    
                     )
-                cat_pipeline=Pipeline(
+            cat_pipeline=Pipeline(
                     steps=[
-                        ("Imputer",SimpleImputer(strategy="mode")),
+                        ("Imputer",SimpleImputer(strategy="most_frequent")),
                         ("one_hot_encoder",OneHotEncoder()),
-                        ("scaler",StandardScaler())
+                        ("scaler",StandardScaler(with_mean=False))
                     ]
                 )
-                logging.info("Numerical colums Scaling completed")        
-                logging.info("Categorical colums encoding completed") 
+            logging.info("Numerical colums Scaling completed")        
+            logging.info("Categorical colums encoding completed") 
 
-                preprocessor=ColumnTransformer(
+            preprocessor=ColumnTransformer(
                     [
                         ("num_pipeline",num_pipeline,numerical_columns),
                         ("cat_pipeline",cat_pipeline,categorical_columns)
                     ]
 
                 )
-                return preprocessor
+            return preprocessor
         except Exception as e:
             raise CustomException(e,sys)
     def initiate_data_transformation(self,train_path,test_path):
@@ -70,10 +71,10 @@ class DataTransformation:
             target_column="math_score"
             numerical_columns=["writing_score","reading_score"]
 
-            input_feature_train_df=train_df.drop(colums=[target_column],axis=1)
+            input_feature_train_df=train_df.drop(columns=[target_column],axis=1)
             target_feature_train_df=train_df[target_column]
 
-            input_feature_test_df=test_df.drop(colums=[target_column],axis=1)
+            input_feature_test_df=test_df.drop(columns=[target_column],axis=1)
             target_feature_test_df=test_df[target_column]
 
             logging.info("Applying transformation object on training and test data")
